@@ -5,6 +5,8 @@ import 'package:meal_flutter/screens/category_meals_screen.dart';
 import 'package:meal_flutter/screens/filters_screen.dart';
 import 'package:meal_flutter/screens/meal_detail_screen.dart';
 import 'package:meal_flutter/screens/tabs_screen.dart';
+import 'package:meal_flutter/test_screens/first_page.dart';
+import 'package:meal_flutter/test_screens/second_page.dart';
 
 import 'models/meal.dart';
 
@@ -20,39 +22,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
-  Map<String, bool> _filters = {
-    'gluten': false,
-    'lactose': false,
-    'vegan': false,
-    'vegetarian': false
-  };
-  List<Meal> _availableMeals = DUMMY_MEALS;
-  List<Meal> _favoriteMeals = [];
-  void _setFilters(Map<String, bool> filterData) {
-    setState(() {
-      _filters = filterData;
-      _availableMeals = DUMMY_MEALS.where((meal) {
-        if (_filters['gluten']! && !meal.isGlutenFree) {
-          return false;
-        }
-        if (_filters['lactose']! && !meal.isLactoseFree) {
-          return false;
-        }
-        if (_filters['vegan']! && !meal.isVegan) {
-          return false;
-        }
-        if (_filters['vegetarian']! && !meal.isVegetarian) {
-          return false;
-        }
-        return true;
-      }).toList();
-    });
-  }
+  List<String> _favoriteMeals = [];
 
-  void _toggleFavorite(String mealId) {
+  void _toggleFavorite(String title) {
+    print("title is $title");
     final existingIndex =
-        _favoriteMeals.indexWhere((meal) => meal.id == mealId);
+        _favoriteMeals.indexWhere((_title) => _title == title);
     if (existingIndex >= 0) {
       setState(() {
         print("remove at ${existingIndex}");
@@ -61,13 +36,9 @@ class _MyAppState extends State<MyApp> {
     } else {
       setState(() {
         print("add at ${existingIndex}");
-        _favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
+        _favoriteMeals.add(title);
       });
     }
-  }
-
-  bool _isMealFavorite(String id) {
-    return _favoriteMeals.any((meal) => meal.id == id);
   }
 
   @override
@@ -99,11 +70,8 @@ class _MyAppState extends State<MyApp> {
               )),
       initialRoute: '/',
       routes: {
-        '/': (ctx) => TabsScreen(_favoriteMeals),
-        '/category-meals': (ctx) => CategoryMealsScreen(_availableMeals),
-        '/meal-detail': (ctx) =>
-            MealDetailScreen(_toggleFavorite, _isMealFavorite),
-        '/filters': (ctx) => FilterScreen(_filters, _setFilters)
+        '/': (ctx) => FirstPage(_favoriteMeals),
+        '/second_page': (ctx) => SecondPage(_toggleFavorite),
       },
       // onGenerateRoute: (settings){
       //   print("onGenerateRoute");
